@@ -88,14 +88,14 @@ tk.Label(form_frame, text="Already a member?", font=("Arial", 10), bg="white").g
 btn_login = tk.Button(form_frame, text="Login Here", font=("Arial", 10, "underline"), fg="blue", bg="white", bd=0, cursor="hand2", command=open_login)
 btn_login.grid(row=9, column=1, sticky="w")
 
-# Function to create the login page with a clean format
+
 def login_page():
     login_win = tk.Toplevel()
     login_win.title("Login Page")
     login_win.geometry("900x500")
     login_win.configure(bg="#f4f4f4")
 
-    # Add a background color and centered login form
+   
     frame = tk.Frame(login_win, bg="white", padx=40, pady=40)
     frame.place(relx=0.5, rely=0.5, anchor="center")
 
