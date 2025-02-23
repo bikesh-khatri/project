@@ -1,9 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
+import sqlite3
 
-# Dictionary to store registered users
-user_data = {"admin": {}, "student": {}}
 
 # Function to open the login page
 def open_login():
@@ -23,12 +22,19 @@ def register():
         messagebox.showerror("Error", "All fields are required!")
     elif password != confirm_password:
         messagebox.showerror("Error", "Passwords do not match!")
-    elif email in user_data[role]:  # Check if email is already registered
-        messagebox.showerror("Error", f"{email} is already registered as {role}!")
     else:
-        user_data[role][email] = password  # Store credentials
-        messagebox.showinfo("Success", f"Registration successful as {role}!\nRedirecting to login page...")
-        open_login()
+        conn = sqlite3.connect("data.db")
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("INSERT INTO users (first_name, last_name,email,password,role) VALUES (?, ?, ?, ?, ?)", (first_name, last_name,email,password,role))
+            conn.commit()
+            login_page()
+            
+        except sqlite3.IntegrityError:
+            messagebox.showerror("Signup failed", "Invalid credentials")
+
+        conn.close()
 
 # Create the registration window
 root = tk.Tk()
@@ -72,8 +78,8 @@ for i, (label, entry) in enumerate(zip(labels, entries)):
 # Role selection
 role_var = tk.StringVar(value="student")
 tk.Label(form_frame, text="Register as:", font=("Arial", 12), bg="white").grid(row=6, column=0, sticky="w", pady=5)
-tk.Radiobutton(form_frame, text="Admin", variable=role_var, value="admin", bg="white").grid(row=6, column=1, sticky="w")
-tk.Radiobutton(form_frame, text="Student", variable=role_var, value="student", bg="white").grid(row=7, column=1, sticky="w")
+tk.Radiobutton(form_frame, text="admin", variable=role_var, value="admin", bg="white").grid(row=6, column=1, sticky="w")
+tk.Radiobutton(form_frame, text="student", variable=role_var, value="student", bg="white").grid(row=7, column=1, sticky="w")
 
 tk.Button(form_frame, text="Register", command=register, bg="#4CAF50", fg="white", font=("Arial", 12)).grid(row=8, column=0, columnspan=2, pady=20)
 
@@ -108,12 +114,21 @@ def login_page():
         password = entry_password.get()
         role = role_var.get()
 
-        if email in user_data[role] and user_data[role][email] == password:
-            messagebox.showinfo("Success", f"Welcome {email} ({role})!")
-            login_win.withdraw()
-            open_dashboard(role)
+        if email == "" or password == "":
+            messagebox.showerror("Invalid Input", "Fields must not be empty!")
         else:
-            messagebox.showerror("Login Failed", "Invalid credentials")
+            conn = sqlite3.connect("data.db")
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT * FROM users WHERE email = ? AND password = ? AND role = ?", (email, password,role))
+            user = cursor.fetchone()
+
+            if user:
+                open_dashboard(role)
+            else:
+                messagebox.showerror("Login failed", "Invalid email or password")
+
+            conn.close()
 
     def open_dashboard(role):
         dashboard = tk.Toplevel()
