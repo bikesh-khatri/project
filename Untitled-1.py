@@ -3,7 +3,7 @@ from tkinter import messagebox
 from PIL import Image, ImageTk  # Pillow library for handling images
 
 # Function to check login credentials
-def check_login():
+
     username = entry_username.get()
     password = entry_password.get()
 
@@ -55,12 +55,12 @@ def open_dashboard():
     button3 = tk.Button(button_frame, text="Reports", **button_style)
     button3.grid(row=0, column=2, padx=10, pady=10)
 
-    # Add a logout button
+   
     button_logout = tk.Button(
         dashboard_window,
         text="Logout",
         command=lambda: logout(dashboard_window),
-        bg="#FF5733",  # Red background
+        bg="#FF5733",  
         fg="white",
         font=("Arial", 12),
         bd=0,
@@ -72,12 +72,12 @@ def open_dashboard():
 # Function to logout and return to the login page
 def logout(dashboard_window):
     dashboard_window.destroy()  # Close the dashboard
-    root.deiconify()  # Show the login window again
+    root.deiconify()  
 
 # Create the main window
 root = tk.Tk()
 root.title("Login Page")
-root.attributes("-fullscreen", True)  # Set the window to full screen
+root.attributes("-fullscreen", True)  
 
 # Get the screen width and height
 screen_width = root.winfo_screenwidth()
@@ -85,7 +85,7 @@ screen_height = root.winfo_screenheight()
 
 # Load the background image
 try:
-    # Replace "background.jpg" with the path to your image
+    
     bg_image = Image.open("123.png") # Load the image
     bg_image = bg_image.resize((screen_width, screen_height), Image.Resampling.LANCZOS)  # Resize to fit the screen
     bg_photo = ImageTk.PhotoImage(bg_image)
