@@ -149,13 +149,105 @@ def login_page(root):
 
 
 def admin_dashboard(user):
-    
     dashboard = tk.Toplevel()
-    dashboard.title(" Dashboard")
+    dashboard.title("Warden Sab")
     dashboard.geometry("800x600")
     dashboard.configure(bg="#f0f0f0")
     dashboard.iconbitmap("abc.ico")
-    tk.Label(dashboard, text=f"Welcome, {(user[1]).capitalize()}!", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black").pack(pady=20)
+
+    # Welcome message
+    welcome_label = tk.Label(dashboard, text=f"Welcome, {(user[1]).capitalize()}!", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black")
+    welcome_label.pack(pady=20)
+
+    # Frame to hold buttons
+    button_frame = tk.Frame(dashboard, bg="#f0f0f0")
+    button_frame.pack(expand=True, fill="both", padx=20, pady=20)
+
+    # Configure columns to allocate extra space
+    button_frame.columnconfigure(0, weight=1)  # Left column
+    button_frame.columnconfigure(1, weight=1)  # Right column
+
+    # Function to handle meal management
+    def meal_management():
+        meal_window = tk.Toplevel(dashboard)
+        meal_window.title("Meal Management")
+        meal_window.geometry("600x400")
+        meal_window.iconbitmap("abc.ico")
+        tk.Label(meal_window, text="Meal Management", font=("Arial", 18)).pack(pady=20)
+        # Add meal-related functionality here
+
+    # Function to handle fee management
+    def fee_management():
+        fee_window = tk.Toplevel(dashboard)
+        fee_window.title("Fee Management")
+        fee_window.geometry("600x400")
+        fee_window.iconbitmap("abc.ico")
+        tk.Label(fee_window, text="Fee Management", font=("Arial", 18)).pack(pady=20)
+        # Add fee-related functionality here
+
+    # Function to handle laundry management
+    def laundry_management():
+        laundry_window = tk.Toplevel(dashboard)
+        laundry_window.title("Laundry Management")
+        laundry_window.geometry("600x400")
+        laundry_window.iconbitmap("abc.ico")
+        tk.Label(laundry_window, text="Laundry Management", font=("Arial", 18)).pack(pady=20)
+        # Add laundry-related functionality here
+
+    # Function to handle room details
+    def room_details():
+        room_window = tk.Toplevel(dashboard)
+        room_window.title("Room Details")
+        room_window.geometry("600x400")
+        room_window.iconbitmap("abc.ico")
+        tk.Label(room_window, text="Room Details", font=("Arial", 18)).pack(pady=20)
+        # Add room-related functionality here
+
+    # Function to handle student management
+    def student_management():
+        student_window = tk.Toplevel(dashboard)
+        student_window.title("Student Management")
+        student_window.geometry("600x400")
+        student_window.iconbitmap("abc.ico")
+        tk.Label(student_window, text="Student Management", font=("Arial", 18)).pack(pady=20)
+        # Add student-related functionality here
+
+   
+
+    # Function to handle logout
+    def logout():
+        dashboard.destroy()  # Close the dashboard window
+        root.deiconify()     # Show the main root window (login page)
+        login_page(root)     # Open the login page
+
+    # Create big and square buttons
+    button_width = 15
+    button_height = 5
+
+    # Meal button (top left, below welcome message)
+    meal_button = tk.Button(button_frame, text="Meal", command=meal_management, bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
+    meal_button.grid(row=1, column=0, padx=50, pady=20, sticky="nw")  # Added padx for spacing
+
+    # Fee button (top right, below welcome message)
+    fee_button = tk.Button(button_frame, text="Fee", command=fee_management, bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
+    fee_button.grid(row=1, column=1, padx=50, pady=20, sticky="ne")  # Added padx for spacing
+
+    # Student button (below meal)
+    student_button = tk.Button(button_frame, text="Student", command=student_management, bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
+    student_button.grid(row=2, column=0, padx=50, pady=20, sticky="nw")  # Added padx for spacing
+
+    # Room button (below fees)
+    room_button = tk.Button(button_frame, text="Room", command=room_details, bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
+    room_button.grid(row=2, column=1, padx=50, pady=20, sticky="ne")  # Added padx for spacing
+
+    # Laundry button (below student)
+    laundry_button = tk.Button(button_frame, text="Laundry", command=laundry_management, bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
+    laundry_button.grid(row=3, column=0, padx=50, pady=20, sticky="nw")  # Added padx for spacing
+
+    # Logout button (between Laundry and Hostel Gallery)
+    logout_button = tk.Button(button_frame, text="Logout", command=logout, bg="#FF0000", fg="white", font=("Arial", 14), width=button_width, height=button_height)
+    logout_button.grid(row=3, column=1, padx=50, pady=20, sticky="ne")  # Added padx for spacing
+
 
 
 
