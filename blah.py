@@ -116,7 +116,10 @@ def login_page(root):
 
         if user:
             login_win.destroy()  # Close login window
-            open_dashboard(role)
+            if role == "student":
+                student_dashboard()
+            else:
+                admin_dashboard()
         else:
             messagebox.showerror("Login failed", "Invalid email or password")
 
@@ -145,14 +148,23 @@ def login_page(root):
     gotoRegister.grid(row=9, column=1, sticky="w")
 
 
-def open_dashboard(role):
-    """Opens the user dashboard"""
+def student_dashboard(role):
+    
     dashboard = tk.Toplevel()
     dashboard.title(f"{role.capitalize()} Dashboard")
     dashboard.geometry("800x600")
     dashboard.configure(bg="#f0f0f0")
 
-    tk.Label(dashboard, text=f"Welcome, {role.capitalize()}!", font=("Arial", 24, "bold"), bg="#f0f0f0").pack(pady=20)
+    tk.Label(dashboard, text=f"Welcome, Student!", font=("Arial", 24, "bold"), bg="#f0f0f0").pack(pady=20)
+
+def admin_dashboard(role):
+    
+    dashboard = tk.Toplevel()
+    dashboard.title(f"{role.capitalize()} Dashboard")
+    dashboard.geometry("800x600")
+    dashboard.configure(bg="#f0f0f0")
+
+    tk.Label(dashboard, text=f"Welcome, Admin!", font=("Arial", 24, "bold"), bg="#f0f0f0").pack(pady=20)
 
 
 if __name__ == "__main__":
