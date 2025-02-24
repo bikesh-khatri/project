@@ -147,7 +147,11 @@ def login_page(root):
 
     tk.Button(frame, text="Login", command=check_login, bg="#4CAF50", fg="white", font=("Arial", 12), padx=20, pady=5).grid(row=5, column=0, columnspan=2, pady=20)
 
+    tk.Label(frame, text="Create new account?", font=("Arial", 10), bg="white").grid(row=9, column=0, pady=5, sticky="e")
 
+    btn_login = tk.Button(frame, text="Register Here", font=("Arial", 10, "underline"), fg="blue", bg="white", bd=0, cursor="hand2",
+                          command=lambda: register_page(root))
+    btn_login.grid(row=9, column=1, sticky="w")
 def open_dashboard(role):
     """Opens the user dashboard"""
     dashboard = tk.Toplevel()
@@ -160,5 +164,5 @@ def open_dashboard(role):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    register_page(root)
+    login_page(root)
     root.mainloop()
