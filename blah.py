@@ -151,7 +151,7 @@ def login_page(root):
 def admin_dashboard(user):
     
     dashboard = tk.Toplevel()
-    dashboard.title(" Dashboard")
+    dashboard.title("Warden Sab")
     dashboard.geometry("800x600")
     dashboard.configure(bg="#f0f0f0")
     dashboard.iconbitmap("abc.ico")
