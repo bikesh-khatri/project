@@ -1,10 +1,10 @@
-from logging import root
 import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import sqlite3
 
 
+root = tk.Tk()
 # Function to open the login page
 def open_login():
     root.withdraw()
@@ -38,7 +38,7 @@ def register():
         conn.close()
 
     # Create the registration window
-    root = tk.Tk()
+
     root.title("Registration Page")
     root.geometry("850x500")
     root.configure(bg="white")
@@ -100,6 +100,8 @@ def login_page():
     frame = tk.Frame(login_win, bg="white", padx=40, pady=40)
     frame.place(relx=0.5, rely=0.5, anchor="center")
 
+    
+
     # Add logo for login page
     try:
         login_logo = Image.open("abc.png")  # Ensure this file exists for login page
@@ -110,7 +112,7 @@ def login_page():
     except Exception as e:
         print(f"Error loading login logo: {e}")
     
-     # Login form fields
+    # Login form fields
     tk.Label(frame, text="Email:", font=("Arial", 12), bg="white").grid(row=1, column=0, pady=10, sticky="e")
     entry_email = tk.Entry(frame, font=("Arial", 12))
     entry_email.grid(row=1, column=1, pady=10)
@@ -119,6 +121,7 @@ def login_page():
     entry_password = tk.Entry(frame, font=("Arial", 12), show="*")
     entry_password.grid(row=2, column=1, pady=10)
 
+    role_var = tk.StringVar(value="student")
     tk.Label(frame, text="Login as:", font=("Arial", 12), bg="white").grid(row=3, column=0, pady=5, sticky="e")
     tk.Radiobutton(frame, text="Admin", variable=role_var, value="admin", bg="white").grid(row=3, column=1, sticky="w")
     tk.Radiobutton(frame, text="Student", variable=role_var, value="student", bg="white").grid(row=4, column=1, sticky="w")
@@ -168,5 +171,6 @@ def login_page():
         dashboard.destroy()
         login_window.deiconify()
 
-   
+    
+
 root.mainloop()
