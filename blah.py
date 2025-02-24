@@ -148,19 +148,19 @@ def login_page(root):
     gotoRegister.grid(row=9, column=1, sticky="w")
 
 
-def student_dashboard(role):
+def student_dashboard():
     
     dashboard = tk.Toplevel()
-    dashboard.title(f"{role.capitalize()} Dashboard")
+    dashboard.title(f"Student Dashboard")
     dashboard.geometry("800x600")
     dashboard.configure(bg="#f0f0f0")
 
     tk.Label(dashboard, text=f"Welcome, Student!", font=("Arial", 24, "bold"), bg="#f0f0f0").pack(pady=20)
 
-def admin_dashboard(role):
+def admin_dashboard():
     
     dashboard = tk.Toplevel()
-    dashboard.title(f"{role.capitalize()} Dashboard")
+    dashboard.title("Admin Dashboard")
     dashboard.geometry("800x600")
     dashboard.configure(bg="#f0f0f0")
 
