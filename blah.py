@@ -207,11 +207,11 @@ def meal_management(root):
     welcome_label.pack(pady=20)
 
     # Connect to database
-    conn = sqlite3.connect("data.db")  # Adjust database name if needed
+    conn = sqlite3.connect("data.db")  
     cursor = conn.cursor()
 
     # Fetch meal data
-    cursor.execute("SELECT day, breakfast, meal, lunch, dinner FROM meal")
+    cursor.execute("SELECT id, day, breakfast, meal, lunch, dinner FROM meal")
     meals = cursor.fetchall()
     conn.close()
 
@@ -225,17 +225,42 @@ def meal_management(root):
         label = tk.Label(table_frame, text=title, font=("Arial", 14, "bold"), bg="lightgray", padx=10, pady=5, borderwidth=1, relief="solid")
         label.grid(row=0, column=col, sticky="nsew")
 
-    # Insert meal data into table
+    # Dictionary to store entry widgets for updates
+    entry_widgets = {}
+
+    # Insert meal data into table with entry fields
     for row, meal in enumerate(meals, start=1):
-        for col, value in enumerate(meal):
-            label = tk.Label(table_frame, text=value, font=("Arial", 12), bg="white", padx=10, pady=5, borderwidth=1, relief="solid")
-            label.grid(row=row, column=col, sticky="nsew")
+        meal_id = meal[0]  # Store ID for updates
+        entry_widgets[meal_id] = []
 
-    # Adjust column weights for resizing
-    for col in range(len(headers)):
-        table_frame.columnconfigure(col, weight=1)
+        for col, value in enumerate(meal[1:]):  # Skip ID column
+            entry = tk.Entry(table_frame, font=("Arial", 12), bg="white", width=15)
+            entry.insert(0, value)  # Pre-fill with existing data
+            entry.grid(row=row, column=col, sticky="nsew", padx=5, pady=5)
+            entry_widgets[meal_id].append(entry)  # Store for later update
 
-  
+    # Function to save updates
+    def save_changes():
+        conn = sqlite3.connect("data.db")
+        cursor = conn.cursor()
+
+        for meal_id, entries in entry_widgets.items():
+            updated_values = [entry.get() for entry in entries]  # Get updated values
+            cursor.execute("""
+                UPDATE meal 
+                SET day = ?, breakfast = ?, meal = ?, lunch = ?, dinner = ? 
+                WHERE id = ?
+            """, (*updated_values, meal_id))
+
+        conn.commit()
+        conn.close()
+        tk.messagebox.showinfo("Success", "Meal plan updated successfully!")
+
+    # Save button
+    save_button = tk.Button(mealBoard, text="Save Changes", font=("Arial", 14, "bold"), bg="green", fg="white", padx=10, pady=5, command=save_changes)
+    save_button.pack(pady=20)
+
+
 
 if __name__ == "__main__":
     root = tk.Tk()
