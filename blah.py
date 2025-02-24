@@ -167,65 +167,12 @@ def admin_dashboard(user):
     button_frame.columnconfigure(0, weight=1)  # Left column
     button_frame.columnconfigure(1, weight=1)  # Right column
 
-    # Function to handle meal management
-    def meal_management():
-        meal_window = tk.Toplevel(dashboard)
-        meal_window.title("Meal Management")
-        meal_window.geometry("600x400")
-        meal_window.iconbitmap("abc.ico")
-        tk.Label(meal_window, text="Meal Management", font=("Arial", 18)).pack(pady=20)
-        # Add meal-related functionality here
-
-    # Function to handle fee management
-    def fee_management():
-        fee_window = tk.Toplevel(dashboard)
-        fee_window.title("Fee Management")
-        fee_window.geometry("600x400")
-        fee_window.iconbitmap("abc.ico")
-        tk.Label(fee_window, text="Fee Management", font=("Arial", 18)).pack(pady=20)
-        # Add fee-related functionality here
-
-    # Function to handle laundry management
-    def laundry_management():
-        laundry_window = tk.Toplevel(dashboard)
-        laundry_window.title("Laundry Management")
-        laundry_window.geometry("600x400")
-        laundry_window.iconbitmap("abc.ico")
-        tk.Label(laundry_window, text="Laundry Management", font=("Arial", 18)).pack(pady=20)
-        # Add laundry-related functionality here
-
-    # Function to handle room details
-    def room_details():
-        room_window = tk.Toplevel(dashboard)
-        room_window.title("Room Details")
-        room_window.geometry("600x400")
-        room_window.iconbitmap("abc.ico")
-        tk.Label(room_window, text="Room Details", font=("Arial", 18)).pack(pady=20)
-        # Add room-related functionality here
-
-    # Function to handle student management
-    def student_management():
-        student_window = tk.Toplevel(dashboard)
-        student_window.title("Student Management")
-        student_window.geometry("600x400")
-        student_window.iconbitmap("abc.ico")
-        tk.Label(student_window, text="Student Management", font=("Arial", 18)).pack(pady=20)
-        # Add student-related functionality here
-
-   
-
-    # Function to handle logout
-    def logout():
-        dashboard.destroy()  # Close the dashboard window
-        root.deiconify()     # Show the main root window (login page)
-        login_page(root)     # Open the login page
-
-    # Create big and square buttons
+      # Create big and square buttons
     button_width = 15
     button_height = 5
 
     # Meal button (top left, below welcome message)
-    meal_button = tk.Button(button_frame, text="Meal", command=meal_management, bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
+    meal_button = tk.Button(button_frame, text="Meal",  command=lambda: [dashboard.destroy(), meal_management(root)], bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
     meal_button.grid(row=1, column=0, padx=50, pady=20, sticky="nw")  # Added padx for spacing
 
     # Fee button (top right, below welcome message)
@@ -248,8 +195,47 @@ def admin_dashboard(user):
     logout_button = tk.Button(button_frame, text="Logout", command=logout, bg="#FF0000", fg="white", font=("Arial", 14), width=button_width, height=button_height)
     logout_button.grid(row=3, column=1, padx=50, pady=20, sticky="ne")  # Added padx for spacing
 
+def meal_management(root):
+    mealBoard = tk.Toplevel()
+    mealBoard.title("Warden Sab")
+    mealBoard.geometry("800x600")
+    mealBoard.configure(bg="#f0f0f0")
+    mealBoard.iconbitmap("abc.ico")
 
+    # Welcome message
+    welcome_label = tk.Label(mealBoard, text="Weekly Meal Plan", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black")
+    welcome_label.pack(pady=20)
 
+    # Connect to database
+    conn = sqlite3.connect("data.db")  # Adjust database name if needed
+    cursor = conn.cursor()
+
+    # Fetch meal data
+    cursor.execute("SELECT day, breakfast, meal, lunch, dinner FROM meal")
+    meals = cursor.fetchall()
+    conn.close()
+
+    # Create table frame
+    table_frame = tk.Frame(mealBoard, bg="#f0f0f0")
+    table_frame.pack()
+
+    # Table headers
+    headers = ["Day", "Breakfast", "Meal", "Lunch", "Dinner"]
+    for col, title in enumerate(headers):
+        label = tk.Label(table_frame, text=title, font=("Arial", 14, "bold"), bg="lightgray", padx=10, pady=5, borderwidth=1, relief="solid")
+        label.grid(row=0, column=col, sticky="nsew")
+
+    # Insert meal data into table
+    for row, meal in enumerate(meals, start=1):
+        for col, value in enumerate(meal):
+            label = tk.Label(table_frame, text=value, font=("Arial", 12), bg="white", padx=10, pady=5, borderwidth=1, relief="solid")
+            label.grid(row=row, column=col, sticky="nsew")
+
+    # Adjust column weights for resizing
+    for col in range(len(headers)):
+        table_frame.columnconfigure(col, weight=1)
+
+  
 
 if __name__ == "__main__":
     root = tk.Tk()
