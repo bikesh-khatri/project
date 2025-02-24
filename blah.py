@@ -3,9 +3,14 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 import sqlite3
 
-
 def register_page(root):
     """Function to create the registration page"""
+
+    root.withdraw()  # Hide the main root window
+    register_win = tk.Toplevel(root)
+    register_win.title("Registration Page")
+    register_win.geometry("850x500")
+    register_win.configure(bg="white")
 
     def register():
         """Handles user registration"""
@@ -31,18 +36,14 @@ def register_page(root):
                            (first_name, last_name, email, password, role))
             conn.commit()
             messagebox.showinfo("Success", "Registration successful!")
-            root.withdraw()
+            register_win.destroy()  # Close register window
             login_page(root)  # Open login page after successful registration
         except sqlite3.IntegrityError:
             messagebox.showerror("Signup failed", "Email already exists!")
         finally:
             conn.close()
 
-    root.title("Registration Page")
-    root.geometry("850x500")
-    root.configure(bg="white")
-
-    logo_frame = tk.Frame(root, width=300, height=500, bg="gray")
+    logo_frame = tk.Frame(register_win, width=300, height=500, bg="gray")
     logo_frame.pack(side="left", fill="both")
 
     # Load and place logo image
@@ -56,7 +57,7 @@ def register_page(root):
     except Exception as e:
         print(f"Error loading logo: {e}")
 
-    form_frame = tk.Frame(root, bg="white")
+    form_frame = tk.Frame(register_win, bg="white")
     form_frame.pack(side="right", expand=True, fill="both", padx=40, pady=20)
 
     tk.Label(form_frame, text="Register", font=("Arial", 18, "bold"), bg="white").grid(row=0, column=0, columnspan=2, pady=10)
@@ -83,13 +84,19 @@ def register_page(root):
 
     tk.Label(form_frame, text="Already a member?", font=("Arial", 10), bg="white").grid(row=9, column=0, pady=5, sticky="e")
 
-    btn_login = tk.Button(form_frame, text="Login Here", font=("Arial", 10, "underline"), fg="blue", bg="white", bd=0, cursor="hand2",
-                          command=lambda: login_page(root))
-    btn_login.grid(row=9, column=1, sticky="w")
+    gotoLogin = tk.Button(form_frame, text="Login Here", font=("Arial", 10, "underline"), fg="blue", bg="white", bd=0, cursor="hand2",
+                          command=lambda: [register_win.destroy(), login_page(root)])
+    gotoLogin.grid(row=9, column=1, sticky="w")
 
 
 def login_page(root):
     """Function to create the login page"""
+
+    root.withdraw()  # Hide main root window
+    login_win = tk.Toplevel(root)
+    login_win.title("Login Page")
+    login_win.geometry("900x500")
+    login_win.configure(bg="#f4f4f4")
 
     def check_login():
         """Validates user login credentials"""
@@ -108,29 +115,13 @@ def login_page(root):
         conn.close()
 
         if user:
-            root.withdraw()
+            login_win.destroy()  # Close login window
             open_dashboard(role)
         else:
             messagebox.showerror("Login failed", "Invalid email or password")
 
-    login_win = tk.Toplevel(root)
-    login_win.title("Login Page")
-    login_win.geometry("900x500")
-    login_win.configure(bg="#f4f4f4")
-
     frame = tk.Frame(login_win, bg="white", padx=40, pady=40)
     frame.place(relx=0.5, rely=0.5, anchor="center")
-
-    # Load and place logo image
-    try:
-        login_logo = Image.open("abc.png")
-        login_logo = login_logo.resize((250, 250), Image.Resampling.LANCZOS)
-        login_logo_img = ImageTk.PhotoImage(login_logo)
-        login_logo_label = tk.Label(frame, image=login_logo_img, bg="white")
-        login_logo_label.image = login_logo_img  # Keep reference
-        login_logo_label.grid(row=0, column=0, columnspan=2, pady=20)
-    except Exception as e:
-        print(f"Error loading login logo: {e}")
 
     tk.Label(frame, text="Email:", font=("Arial", 12), bg="white").grid(row=1, column=0, pady=10, sticky="e")
     entry_email = tk.Entry(frame, font=("Arial", 12))
@@ -149,9 +140,11 @@ def login_page(root):
 
     tk.Label(frame, text="Create new account?", font=("Arial", 10), bg="white").grid(row=9, column=0, pady=5, sticky="e")
 
-    btn_login = tk.Button(frame, text="Register Here", font=("Arial", 10, "underline"), fg="blue", bg="white", bd=0, cursor="hand2",
-                          command=lambda: register_page(root))
-    btn_login.grid(row=9, column=1, sticky="w")
+    gotoRegister = tk.Button(frame, text="Register Here", font=("Arial", 10, "underline"), fg="blue", bg="white", bd=0, cursor="hand2",
+                          command=lambda: [login_win.destroy(), register_page(root)])
+    gotoRegister.grid(row=9, column=1, sticky="w")
+
+
 def open_dashboard(role):
     """Opens the user dashboard"""
     dashboard = tk.Toplevel()
