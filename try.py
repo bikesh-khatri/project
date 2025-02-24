@@ -94,6 +94,7 @@ def login_page(root):
     login_win.geometry("900x500")
     login_win.configure(bg="#f4f4f4")
     login_win.iconbitmap("abc.ico")
+
     def check_login():
         """Validates user login credentials"""
         email = entry_email.get()
@@ -138,11 +139,11 @@ def login_page(root):
 def admin_dashboard(user):
     
     dashboard = tk.Toplevel()
-    dashboard.title(" Dashboard")
+    dashboard.title("Admin Dashboard")
     dashboard.geometry("800x600")
     dashboard.configure(bg="#f0f0f0")
-    dashboard.iconbitmap("abc.ico")
-    tk.Label(dashboard, text=f"Welcome, {(user[1]).capitalize()}!", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black").pack(pady=20)
+
+    tk.Label(dashboard, text=f"Welcome, {user[1]}!", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black").pack(pady=20)
 
 
 
