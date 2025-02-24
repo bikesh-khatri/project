@@ -94,7 +94,19 @@ def login_page(root):
     login_win.geometry("900x500")
     login_win.configure(bg="#f4f4f4")
     login_win.iconbitmap("abc.ico")
-
+    logo_frame = tk.Frame(login_win, width=300, height=500, bg="gray")
+    logo_frame.pack(side="left", fill="both")
+    try:
+        logo = Image.open("abc.png")
+        logo = logo.resize((250, 250), Image.Resampling.LANCZOS)
+        logo_img = ImageTk.PhotoImage(logo)
+        logo_label = tk.Label(logo_frame, image=logo_img, bg="gray")
+        logo_label.image = logo_img  # Keep reference
+        logo_label.pack(pady=50)
+    except Exception as e:
+        print(f"Error loading logo: {e}")
+    form_frame = tk.Frame(login_win, bg="white")
+    form_frame.pack(side="right", expand=True, fill="both", padx=40, pady=20)
     def check_login():
         """Validates user login credentials"""
         email = entry_email.get()
@@ -139,11 +151,11 @@ def login_page(root):
 def admin_dashboard(user):
     
     dashboard = tk.Toplevel()
-    dashboard.title("Admin Dashboard")
+    dashboard.title(" Dashboard")
     dashboard.geometry("800x600")
     dashboard.configure(bg="#f0f0f0")
-
-    tk.Label(dashboard, text=f"Welcome, {user[1]}!", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black").pack(pady=20)
+    dashboard.iconbitmap("abc.ico")
+    tk.Label(dashboard, text=f"Welcome, {(user[1]).capitalize()}!", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black").pack(pady=20)
 
 
 
