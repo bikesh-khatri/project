@@ -19,7 +19,7 @@ def register_page(root):
         email = entry_email.get()
         password = entry_password.get()
         confirm_password = entry_confirm_password.get()
-        role = role_var.get()
+       
 
         if not first_name or not last_name or not email or not password or not confirm_password:
             messagebox.showerror("Error", "All fields are required!")
@@ -32,8 +32,8 @@ def register_page(root):
         cursor = conn.cursor()
 
         try:
-            cursor.execute("INSERT INTO users (first_name, last_name, email, password, role) VALUES (?, ?, ?, ?, ?)",
-                           (first_name, last_name, email, password, role))
+            cursor.execute("INSERT INTO users (first_name, last_name, email, password, role) VALUES (?, ?, ?, ?)",
+                           (first_name, last_name, email, password))
             conn.commit()
             messagebox.showinfo("Success", "Registration successful!")
             register_win.destroy()  # Close register window
@@ -75,11 +75,6 @@ def register_page(root):
         tk.Label(form_frame, text=label, font=("Arial", 12), bg="white").grid(row=i+1, column=0, sticky="w", pady=5)
         entry.grid(row=i+1, column=1, pady=5, padx=10)
 
-    role_var = tk.StringVar(value="student")
-    tk.Label(form_frame, text="Register as:", font=("Arial", 12), bg="white").grid(row=6, column=0, sticky="w", pady=5)
-    tk.Radiobutton(form_frame, text="Admin", variable=role_var, value="admin", bg="white").grid(row=6, column=1, sticky="w")
-    tk.Radiobutton(form_frame, text="Student", variable=role_var, value="student", bg="white").grid(row=7, column=1, sticky="w")
-
     tk.Button(form_frame, text="Register", command=register, bg="#4CAF50", fg="white", font=("Arial", 12)).grid(row=8, column=0, columnspan=2, pady=20)
 
     tk.Label(form_frame, text="Already a member?", font=("Arial", 10), bg="white").grid(row=9, column=0, pady=5, sticky="e")
@@ -102,7 +97,6 @@ def login_page(root):
         """Validates user login credentials"""
         email = entry_email.get()
         password = entry_password.get()
-        role = role_var.get()
 
         if not email or not password:
             messagebox.showerror("Invalid Input", "Fields must not be empty!")
@@ -110,16 +104,13 @@ def login_page(root):
 
         conn = sqlite3.connect("data.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE email = ? AND password = ? AND role = ?", (email, password, role))
+        cursor.execute("SELECT * FROM users WHERE email = ? AND password = ?", (email, password))
         user = cursor.fetchone()
         conn.close()
 
         if user:
             login_win.destroy()  # Close login window
-            if role == "student":
-                student_dashboard()
-            else:
-                admin_dashboard()
+            admin_dashboard
         else:
             messagebox.showerror("Login failed", "Invalid email or password")
 
@@ -134,11 +125,6 @@ def login_page(root):
     entry_password = tk.Entry(frame, font=("Arial", 12), show="*")
     entry_password.grid(row=2, column=1, pady=10)
 
-    role_var = tk.StringVar(value="student")
-    tk.Label(frame, text="Login as:", font=("Arial", 12), bg="white").grid(row=3, column=0, pady=5, sticky="e")
-    tk.Radiobutton(frame, text="Admin", variable=role_var, value="admin", bg="white").grid(row=3, column=1, sticky="w")
-    tk.Radiobutton(frame, text="Student", variable=role_var, value="student", bg="white").grid(row=4, column=1, sticky="w")
-
     tk.Button(frame, text="Login", command=check_login, bg="#4CAF50", fg="white", font=("Arial", 12), padx=20, pady=5).grid(row=5, column=0, columnspan=2, pady=20)
 
     tk.Label(frame, text="Create new account?", font=("Arial", 10), bg="white").grid(row=9, column=0, pady=5, sticky="e")
@@ -147,15 +133,6 @@ def login_page(root):
                           command=lambda: [login_win.destroy(), register_page(root)])
     gotoRegister.grid(row=9, column=1, sticky="w")
 
-
-def student_dashboard():
-    
-    dashboard = tk.Toplevel()
-    dashboard.title(f"Student Dashboard")
-    dashboard.geometry("800x600")
-    dashboard.configure(bg="#f0f0f0")
-
-    tk.Label(dashboard, text=f"Welcome, Student!", font=("Arial", 24, "bold"), bg="#f0f0f0").pack(pady=20)
 
 def admin_dashboard():
     
