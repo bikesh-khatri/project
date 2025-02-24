@@ -140,8 +140,7 @@ def admin_dashboard(user):
     dashboard.title("Admin Dashboard")
     dashboard.geometry("800x600")
     dashboard.configure(bg="#f0f0f0")
-
-    tk.Label(dashboard, text=f"Welcome, {user[1]}!", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black").pack(pady=20)
+    tk.Label(dashboard, text=f"Welcome, {(user[1]).capitalize()}!", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black").pack(pady=20)
 
 
 
