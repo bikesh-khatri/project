@@ -32,7 +32,7 @@ def register_page(root):
         cursor = conn.cursor()
 
         try:
-            cursor.execute("INSERT INTO users (first_name, last_name, email, password, role) VALUES (?, ?, ?, ?)",
+            cursor.execute("INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)",
                            (first_name, last_name, email, password))
             conn.commit()
             messagebox.showinfo("Success", "Registration successful!")
@@ -110,7 +110,7 @@ def login_page(root):
 
         if user:
             login_win.destroy()  # Close login window
-            admin_dashboard
+            admin_dashboard(user)
         else:
             messagebox.showerror("Login failed", "Invalid email or password")
 
@@ -134,14 +134,15 @@ def login_page(root):
     gotoRegister.grid(row=9, column=1, sticky="w")
 
 
-def admin_dashboard():
+def admin_dashboard(user):
     
     dashboard = tk.Toplevel()
     dashboard.title("Admin Dashboard")
     dashboard.geometry("800x600")
     dashboard.configure(bg="#f0f0f0")
 
-    tk.Label(dashboard, text=f"Welcome, Admin!", font=("Arial", 24, "bold"), bg="#f0f0f0").pack(pady=20)
+    tk.Label(dashboard, text=f"Welcome, {user[1]}!", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black").pack(pady=20)
+
 
 
 if __name__ == "__main__":
