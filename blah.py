@@ -270,6 +270,14 @@ def students(root):
     students_win.configure(bg="#f0f0f0")
     students_win.iconbitmap("abc.ico")
 
+    # Set the window to full screen
+    students_win.attributes('-fullscreen', True)
+
+    # Add a small arrow button at the top-left corner
+    back_button = tk.Label(students_win, text="←", font=("Arial", 10), bg="#f0f0f0", fg="black", cursor="hand2")
+    back_button.place(x=10, y=10)  # Position at the top-left corner
+    back_button.bind("<Button-1>", lambda e: [students_win.destroy(), admin_dashboard()])  # Bind click event
+
     # Welcome message
     welcome_label = tk.Label(students_win, text="Students Details", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black")
     welcome_label.pack(pady=20)
@@ -361,22 +369,52 @@ def students(root):
         # Save button
         tk.Button(edit_win, text="Save", font=("Arial", 14), bg="#4CAF50", fg="white", command=save_edit).grid(row=len(labels), column=0, columnspan=2, pady=10)
 
+    # Function to remove a student record
+    def remove_student():
+        selected_item = tree.selection()
+        if not selected_item:
+            messagebox.showerror("Error", "Please select a student to remove!")
+            return
+
+        # Get the selected student's ID
+        student_id = tree.item(selected_item, "values")[0]
+
+        # Confirm deletion
+        confirm = messagebox.askyesno("Confirm Delete", "Are you sure you want to delete this student?")
+        if not confirm:
+            return
+
+        # Delete the student from the database
+        conn = sqlite3.connect("data.db")
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM student WHERE id = ?", (student_id,))
+        conn.commit()
+        conn.close()
+
+        # Remove the student from the table
+        tree.delete(selected_item)
+        messagebox.showinfo("Success", "Student removed successfully!")
+
     # Load student data into the table
     load_students()
 
-    # Add buttons for editing and refreshing the table
+    # Add buttons for editing and removing students
     button_frame = tk.Frame(students_win, bg="#f0f0f0")
     button_frame.pack(pady=10)
 
     tk.Button(button_frame, text="Edit Selected Student", font=("Arial", 14), bg="#4CAF50", fg="white", command=edit_student).pack(side="left", padx=10)
-    tk.Button(button_frame, text="Refresh Table", font=("Arial", 14), bg="#4CAF50", fg="white", command=load_students).pack(side="left", padx=10)
-
+    tk.Button(button_frame, text="Remove Selected Student", font=("Arial", 14), bg="#FF0000", fg="white", command=remove_student).pack(side="left", padx=10)
 def add_students(root):
     addStudent = tk.Toplevel(root)
     addStudent.title("Add Student")
     addStudent.geometry("800x600")
     addStudent.configure(bg="#f0f0f0")
     addStudent.iconbitmap("abc.ico")
+     # Add a small arrow button at the top-left corner
+    back_button = tk.Label(addStudent, text="←", font=("Arial", 10), bg="#f0f0f0", fg="black", cursor="hand2")
+    back_button.place(x=10, y=10)  # Position at the top-left corner
+    back_button.bind("<Button-1>", lambda e: [addStudent.destroy(), admin_dashboard()])  # Bind click event
+
 
 
     # Fetch available rooms
@@ -464,5 +502,3 @@ if __name__ == "__main__":
     root.iconbitmap("abc.ico")
     login_page(root)
     root.mainloop()
-
-
