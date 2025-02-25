@@ -378,6 +378,7 @@ def students(root):
 
         # Get the selected student's ID
         student_id = tree.item(selected_item, "values")[0]
+        room_number = tree.item(selected_item, "values")[10]
 
         # Confirm deletion
         confirm = messagebox.askyesno("Confirm Delete", "Are you sure you want to delete this student?")
@@ -388,6 +389,7 @@ def students(root):
         conn = sqlite3.connect("data.db")
         cursor = conn.cursor()
         cursor.execute("DELETE FROM student WHERE id = ?", (student_id,))
+        cursor.execute("UPDATE room SET occupied = occupied - 1 WHERE id = ?", (room_number,))
         conn.commit()
         conn.close()
 
