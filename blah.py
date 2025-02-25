@@ -263,16 +263,113 @@ def meal_management(root):
     save_button = tk.Button(mealBoard, text="Save Changes", font=("Arial", 14, "bold"), bg="green", fg="white", padx=10, pady=5, command=save_changes)
     save_button.pack(pady=20)
 
-def students(rooot):
-    mealBoard = tk.Toplevel()
-    mealBoard.title("Students details")
-    mealBoard.geometry("800x600")
-    mealBoard.configure(bg="#f0f0f0")
-    mealBoard.iconbitmap("abc.ico")
+def students(root):
+    students_win = tk.Toplevel(root)
+    students_win.title("Students Details")
+    students_win.geometry("1000x600")
+    students_win.configure(bg="#f0f0f0")
+    students_win.iconbitmap("abc.ico")
 
     # Welcome message
-    welcome_label = tk.Label(mealBoard, text="Students details", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black")
+    welcome_label = tk.Label(students_win, text="Students Details", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black")
     welcome_label.pack(pady=20)
+
+    # Create a frame for the table
+    table_frame = tk.Frame(students_win, bg="#f0f0f0")
+    table_frame.pack(fill="both", expand=True, padx=20, pady=10)
+
+    # Create a Treeview widget
+    columns = ("ID", "Name", "DOB", "Address", "Email", "Phone", "Parent Name", "Parent Phone", "Entry Date", "Paid Till", "Room Number")
+    tree = ttk.Treeview(table_frame, columns=columns, show="headings", selectmode="browse")
+    tree.pack(fill="both", expand=True)
+
+    # Define column headings
+    for col in columns:
+        tree.heading(col, text=col)
+
+    # Define column widths
+    tree.column("ID", width=50)
+    tree.column("Name", width=150)
+    tree.column("DOB", width=100)
+    tree.column("Address", width=200)
+    tree.column("Email", width=150)
+    tree.column("Phone", width=100)
+    tree.column("Parent Name", width=150)
+    tree.column("Parent Phone", width=100)
+    tree.column("Entry Date", width=100)
+    tree.column("Paid Till", width=100)
+    tree.column("Room Number", width=100)
+
+    # Function to load student data into the table
+    def load_students():
+        conn = sqlite3.connect("data.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM student")
+        students = cursor.fetchall()
+        conn.close()
+
+        # Clear existing data in the table
+        for row in tree.get_children():
+            tree.delete(row)
+
+        # Insert new data into the table
+        for student in students:
+            tree.insert("", "end", values=student)
+
+    # Function to edit a student record
+    def edit_student():
+        selected_item = tree.selection()
+        if not selected_item:
+            messagebox.showerror("Error", "Please select a student to edit!")
+            return
+
+        # Get the selected student's data
+        student_data = tree.item(selected_item, "values")
+
+        # Create a new window for editing
+        edit_win = tk.Toplevel(students_win)
+        edit_win.title("Edit Student")
+        edit_win.geometry("400x500")
+        edit_win.configure(bg="#f0f0f0")
+
+        # Create entry fields for editing
+        entries = {}
+        labels = ["ID", "Name", "DOB", "Address", "Email", "Phone", "Parent Name", "Parent Phone", "Entry Date", "Paid Till", "Room Number"]
+        for i, label in enumerate(labels):
+            tk.Label(edit_win, text=label, font=("Arial", 12), bg="#F0F0F0").grid(row=i, column=0, padx=10, pady=5, sticky="w")
+            entry = tk.Entry(edit_win, font=("Arial", 12))
+            entry.grid(row=i, column=1, padx=10, pady=5, sticky="w")
+            entry.insert(0, student_data[i])
+            entries[label] = entry
+
+        # Function to save the edited data
+        def save_edit():
+            updated_data = [entries[label].get() for label in labels]
+            conn = sqlite3.connect("data.db")
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE student 
+                SET name=?, dob=?, address=?, email=?, number=?, parent_name=?, parent_number=?, entry_date=?, paid_till=?, room_number=?
+                WHERE id=?
+            """, (*updated_data[1:], updated_data[0]))
+            conn.commit()
+            conn.close()
+            messagebox.showinfo("Success", "Student record updated successfully!")
+            edit_win.destroy()
+            load_students()
+
+        # Save button
+        tk.Button(edit_win, text="Save", font=("Arial", 14), bg="#4CAF50", fg="white", command=save_edit).grid(row=len(labels), column=0, columnspan=2, pady=10)
+
+    # Load student data into the table
+    load_students()
+
+    # Add buttons for editing and refreshing the table
+    button_frame = tk.Frame(students_win, bg="#f0f0f0")
+    button_frame.pack(pady=10)
+
+    tk.Button(button_frame, text="Edit Selected Student", font=("Arial", 14), bg="#4CAF50", fg="white", command=edit_student).pack(side="left", padx=10)
+    tk.Button(button_frame, text="Refresh Table", font=("Arial", 14), bg="#4CAF50", fg="white", command=load_students).pack(side="left", padx=10)
 
 def add_students(root):
     addStudent = tk.Toplevel(root)
