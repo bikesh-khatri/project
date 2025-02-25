@@ -352,6 +352,7 @@ def add_students(root):
     # Room selection dropdown
     tk.Label(addStudent, text="Select Room", font=("Arial", 12), bg="#F0F0F0").pack()
     rooms = fetch_rooms()
+    print(rooms)
     room_var = tk.StringVar()
     room_dropdown = ttk.Combobox(addStudent, textvariable=room_var, values=[f"Room {r[0]} (Floor {r[1]})" for r in rooms], state="readonly")
     room_dropdown.pack(pady=5)
@@ -364,3 +365,5 @@ if __name__ == "__main__":
     root.iconbitmap("abc.ico")
     login_page(root)
     root.mainloop()
+
+
