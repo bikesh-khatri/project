@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import ttk
 from PIL import Image, ImageTk
 import sqlite3
 
@@ -175,13 +176,14 @@ def admin_dashboard(user):
     meal_button = tk.Button(button_frame, text="Meal",  command=lambda: [dashboard.destroy(), meal_management(root)], bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
     meal_button.grid(row=1, column=0, padx=50, pady=20, sticky="nw")  # Added padx for spacing
 
-    # Fee button (top right, below welcome message)
-    fee_button = tk.Button(button_frame, text="Fee", command=fee_management, bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
-    fee_button.grid(row=1, column=1, padx=50, pady=20, sticky="ne")  # Added padx for spacing
-
+    
     # Student button (below meal)
-    student_button = tk.Button(button_frame, text="Student", command=student_management, bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
+    student_button = tk.Button(button_frame, text="Students",  command=lambda: [dashboard.destroy(), students(root)], bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
     student_button.grid(row=2, column=0, padx=50, pady=20, sticky="nw")  # Added padx for spacing
+
+    # Fee button (top right, below welcome message)
+    fee_button = tk.Button(button_frame, text="Add Student",command=lambda: [dashboard.destroy(), add_students(root)], bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
+    fee_button.grid(row=1, column=1, padx=50, pady=20, sticky="ne")  # Added padx for spacing
 
     # Room button (below fees)
     room_button = tk.Button(button_frame, text="Room", command=room_details, bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
@@ -260,7 +262,109 @@ def meal_management(root):
     save_button = tk.Button(mealBoard, text="Save Changes", font=("Arial", 14, "bold"), bg="green", fg="white", padx=10, pady=5, command=save_changes)
     save_button.pack(pady=20)
 
+def students(rooot):
+    mealBoard = tk.Toplevel()
+    mealBoard.title("Students details")
+    mealBoard.geometry("800x600")
+    mealBoard.configure(bg="#f0f0f0")
+    mealBoard.iconbitmap("abc.ico")
 
+    # Welcome message
+    welcome_label = tk.Label(mealBoard, text="Students details", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black")
+    welcome_label.pack(pady=20)
+
+def add_students(root):
+    mealBoard = tk.Toplevel(root)
+    mealBoard.title("Add Student")
+    mealBoard.geometry("800x600")
+    mealBoard.configure(bg="#f0f0f0")
+    mealBoard.iconbitmap("abc.ico")
+
+    # Database connection inside the function
+    def connect_db():
+        return sqlite3.connector.connect(
+            host="localhost",
+            user="root",  # Change if needed
+            password="",  # Change if needed
+            database="your_database"  # Change to your database name
+        )
+
+    # Fetch available rooms
+    def fetch_rooms():
+        conn = connect_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, floor, capacity, occupied FROM room WHERE occupied < capacity")
+        rooms_list = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return rooms_list
+
+    # Submit student and update room occupancy
+    def submit():
+        name = entries["Name"].get()
+        dob = entries["Date of Birth (YYYY-MM-DD)"].get()
+        address = entries["Address"].get()
+        email = entries["Email"].get()
+        number = entries["Phone Number"].get()
+        parent_name = entries["Parent Name"].get()
+        parent_number = entries["Parent Number"].get()
+        entry_date = entries["Entry Date (YYYY-MM-DD)"].get()
+        paid_till = entries["Paid Till (YYYY-MM-DD)"].get()
+        selected_room = room_var.get()
+
+        if not name or not dob or not address or not email or not number or not parent_name or not parent_number or not selected_room:
+            messagebox.showerror("Error", "Please fill in all fields!")
+            return
+
+        room_number = int(selected_room.split()[1])  # Extract room ID from "Room X"
+
+        conn = connect_db()
+        cursor = conn.cursor()
+
+        try:
+            # Insert student into database
+            cursor.execute("""
+                INSERT INTO student (name, dob, address, email, number, parent_name, parent_number, entry_date, paid_till, room_number)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (name, dob, address, email, number, parent_name, parent_number, entry_date, paid_till, room_number))
+
+            # Update room occupancy
+            cursor.execute("UPDATE room SET occupied = occupied + 1 WHERE id = %s", (room_number,))
+
+            conn.commit()
+            messagebox.showinfo("Success", "Student added successfully!")
+            mealBoard.destroy()  # Close form after submission
+
+        except sqlite3.Error as e:
+            messagebox.showerror("Database Error", f"Error: {e}")
+            conn.rollback()
+
+        finally:
+            cursor.close()
+            conn.close()
+
+        # UI Elements
+        tk.Label(mealBoard, text="Add Student", font=("Arial", 24, "bold"), bg="#F0F0F0").pack(pady=20)
+
+        labels = ["Name", "Date of Birth (YYYY-MM-DD)", "Address", "Email", "Phone Number",
+              "Parent Name", "Parent Number", "Entry Date (YYYY-MM-DD)", "Paid Till (YYYY-MM-DD)"]
+        entries = {}
+
+        for label in labels:
+            tk.Label(mealBoard, text=label, font=("Arial", 12), bg="#F0F0F0").pack()
+            entry = tk.Entry(mealBoard, font=("Arial", 12))
+            entry.pack(pady=2)
+            entries[label] = entry
+
+        # Room selection dropdown
+        tk.Label(mealBoard, text="Select Room", font=("Arial", 12), bg="#F0F0F0").pack()
+        rooms = fetch_rooms()
+        room_var = tk.StringVar()
+        room_dropdown = ttk.Combobox(mealBoard, textvariable=room_var, values=[f"Room {r[0]} (Floor {r[1]})" for r in rooms], state="readonly")
+        room_dropdown.pack(pady=5)
+
+        # Submit button
+        tk.Button(mealBoard, text="Submit", font=("Arial", 14), bg="#4CAF50", fg="white", command=submit).pack(pady=10)
 
 if __name__ == "__main__":
     root = tk.Tk()
