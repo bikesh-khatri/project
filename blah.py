@@ -184,7 +184,7 @@ def admin_dashboard(user):
     # Fee button (top right, below welcome message)
     fee_button = tk.Button(button_frame, text="Add Student",command=lambda: [dashboard.destroy(), add_students(root)], bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
     fee_button.grid(row=1, column=1, padx=50, pady=20, sticky="ne")  # Added padx for spacing
-
+'''
     # Room button (below fees)
     room_button = tk.Button(button_frame, text="Room", command=room_details, bg="#4CAF50", fg="white", font=("Arial", 14), width=button_width, height=button_height)
     room_button.grid(row=2, column=1, padx=50, pady=20, sticky="ne")  # Added padx for spacing
@@ -196,6 +196,7 @@ def admin_dashboard(user):
     # Logout button (between Laundry and Hostel Gallery)
     logout_button = tk.Button(button_frame, text="Logout", command=logout, bg="#FF0000", fg="white", font=("Arial", 14), width=button_width, height=button_height)
     logout_button.grid(row=3, column=1, padx=50, pady=20, sticky="ne")  # Added padx for spacing
+'''
 
 def meal_management(root):
     mealBoard = tk.Toplevel()
@@ -274,24 +275,16 @@ def students(rooot):
     welcome_label.pack(pady=20)
 
 def add_students(root):
-    mealBoard = tk.Toplevel(root)
-    mealBoard.title("Add Student")
-    mealBoard.geometry("800x600")
-    mealBoard.configure(bg="#f0f0f0")
-    mealBoard.iconbitmap("abc.ico")
+    addStudent = tk.Toplevel(root)
+    addStudent.title("Add Student")
+    addStudent.geometry("800x600")
+    addStudent.configure(bg="#f0f0f0")
+    addStudent.iconbitmap("abc.ico")
 
-    # Database connection inside the function
-    def connect_db():
-        return sqlite3.connector.connect(
-            host="localhost",
-            user="root",  # Change if needed
-            password="",  # Change if needed
-            database="your_database"  # Change to your database name
-        )
 
     # Fetch available rooms
     def fetch_rooms():
-        conn = connect_db()
+        conn = sqlite3.connect("data.db")
         cursor = conn.cursor()
         cursor.execute("SELECT id, floor, capacity, occupied FROM room WHERE occupied < capacity")
         rooms_list = cursor.fetchall()
@@ -318,7 +311,7 @@ def add_students(root):
 
         room_number = int(selected_room.split()[1])  # Extract room ID from "Room X"
 
-        conn = connect_db()
+        conn = sqlite3.connect("data.db")
         cursor = conn.cursor()
 
         try:
@@ -333,7 +326,7 @@ def add_students(root):
 
             conn.commit()
             messagebox.showinfo("Success", "Student added successfully!")
-            mealBoard.destroy()  # Close form after submission
+            addStudent.destroy()  # Close form after submission
 
         except sqlite3.Error as e:
             messagebox.showerror("Database Error", f"Error: {e}")
@@ -343,28 +336,28 @@ def add_students(root):
             cursor.close()
             conn.close()
 
-        # UI Elements
-        tk.Label(mealBoard, text="Add Student", font=("Arial", 24, "bold"), bg="#F0F0F0").pack(pady=20)
+    # UI Elements
+    tk.Label(addStudent, text="Add Student", font=("Arial", 24, "bold"), bg="#F0F0F0").pack(pady=20)
 
-        labels = ["Name", "Date of Birth (YYYY-MM-DD)", "Address", "Email", "Phone Number",
+    labels = ["Name", "Date of Birth (YYYY-MM-DD)", "Address", "Email", "Phone Number",
               "Parent Name", "Parent Number", "Entry Date (YYYY-MM-DD)", "Paid Till (YYYY-MM-DD)"]
-        entries = {}
+    entries = {}
 
-        for label in labels:
-            tk.Label(mealBoard, text=label, font=("Arial", 12), bg="#F0F0F0").pack()
-            entry = tk.Entry(mealBoard, font=("Arial", 12))
-            entry.pack(pady=2)
-            entries[label] = entry
+    for label in labels:
+        tk.Label(addStudent, text=label, font=("Arial", 12), bg="#F0F0F0").pack()
+        entry = tk.Entry(addStudent, font=("Arial", 12))
+        entry.pack(pady=2)
+        entries[label] = entry
 
-        # Room selection dropdown
-        tk.Label(mealBoard, text="Select Room", font=("Arial", 12), bg="#F0F0F0").pack()
-        rooms = fetch_rooms()
-        room_var = tk.StringVar()
-        room_dropdown = ttk.Combobox(mealBoard, textvariable=room_var, values=[f"Room {r[0]} (Floor {r[1]})" for r in rooms], state="readonly")
-        room_dropdown.pack(pady=5)
+    # Room selection dropdown
+    tk.Label(addStudent, text="Select Room", font=("Arial", 12), bg="#F0F0F0").pack()
+    rooms = fetch_rooms()
+    room_var = tk.StringVar()
+    room_dropdown = ttk.Combobox(addStudent, textvariable=room_var, values=[f"Room {r[0]} (Floor {r[1]})" for r in rooms], state="readonly")
+    room_dropdown.pack(pady=5)
 
-        # Submit button
-        tk.Button(mealBoard, text="Submit", font=("Arial", 14), bg="#4CAF50", fg="white", command=submit).pack(pady=10)
+    # Submit button
+    tk.Button(addStudent, text="Submit", font=("Arial", 14), bg="#4CAF50", fg="white", command=submit).pack(pady=10)
 
 if __name__ == "__main__":
     root = tk.Tk()
