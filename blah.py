@@ -125,7 +125,7 @@ def login_page(root):
 
         if user:
             login_win.destroy()  # Close login window
-            admin_dashboard(user)
+            admin_dashboard()
         else:
             messagebox.showerror("Login failed", "Invalid email or password")
 
@@ -149,7 +149,7 @@ def login_page(root):
     gotoRegister.grid(row=9, column=1, sticky="w")
 
 
-def admin_dashboard(user):
+def admin_dashboard():
     dashboard = tk.Toplevel()
     dashboard.title("Warden Sab")
     dashboard.geometry("800x600")
@@ -157,10 +157,10 @@ def admin_dashboard(user):
     dashboard.iconbitmap("abc.ico")
 
     # Welcome message
-    welcome_label = tk.Label(dashboard, text=f"Welcome, {(user[1]).capitalize()}!", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black")
+    welcome_label = tk.Label(dashboard, text=f"Welcome!", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black")
     welcome_label.pack(pady=20)
 
-    # Frame to hold buttons
+    # Frame to hold buttons 
     button_frame = tk.Frame(dashboard, bg="#f0f0f0")
     button_frame.pack(expand=True, fill="both", padx=20, pady=20)
 
@@ -318,15 +318,17 @@ def add_students(root):
             # Insert student into database
             cursor.execute("""
                 INSERT INTO student (name, dob, address, email, number, parent_name, parent_number, entry_date, paid_till, room_number)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (name, dob, address, email, number, parent_name, parent_number, entry_date, paid_till, room_number))
 
             # Update room occupancy
-            cursor.execute("UPDATE room SET occupied = occupied + 1 WHERE id = %s", (room_number,))
+            cursor.execute("UPDATE room SET occupied = occupied + 1 WHERE id = ?", (room_number,))
 
             conn.commit()
             messagebox.showinfo("Success", "Student added successfully!")
-            addStudent.destroy()  # Close form after submission
+            admin_dashboard()
+            addStudent.destroy()
+            
 
         except sqlite3.Error as e:
             messagebox.showerror("Database Error", f"Error: {e}")
