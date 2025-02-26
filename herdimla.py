@@ -207,6 +207,11 @@ def meal_management(user_id):
     mealBoard.geometry("800x600")
     mealBoard.configure(bg="#f0f0f0")
     mealBoard.iconbitmap("abc.ico")
+    mealBoard.attributes('-fullscreen', True)
+
+    back_button = tk.Label(mealBoard, text="←", font=("Arial", 10), bg="#f0f0f0", fg="black", cursor="hand2")
+    back_button.place(x=10, y=10)
+    back_button.bind("<Button-1>", lambda e: [mealBoard.destroy(), admin_dashboard(user_id)])
 
     welcome_label = tk.Label(mealBoard, text="Weekly Meal Plan", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black")
     welcome_label.pack(pady=20)
@@ -369,6 +374,7 @@ def add_students(user_id):
     addStudent.geometry("800x600")
     addStudent.configure(bg="#f0f0f0")
     addStudent.iconbitmap("abc.ico")
+    addStudent.attributes('-fullscreen', True)
 
     back_button = tk.Label(addStudent, text="←", font=("Arial", 10), bg="#f0f0f0", fg="black", cursor="hand2")
     back_button.place(x=10, y=10)

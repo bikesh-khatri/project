@@ -204,6 +204,13 @@ def meal_management(root):
     mealBoard.geometry("800x600")
     mealBoard.configure(bg="#f0f0f0")
     mealBoard.iconbitmap("abc.ico")
+        # Set the window to full screen
+    mealBoard.attributes('-fullscreen', True)
+
+    # Add a small arrow button at the top-left corner
+    back_button = tk.Label(mealBoard, text="←", font=("Arial", 10), bg="#f0f0f0", fg="black", cursor="hand2")
+    back_button.place(x=10, y=10)  # Position at the top-left corner
+    back_button.bind("<Button-1>", lambda e: [mealBoard.destroy(), admin_dashboard()]) 
 
     # Welcome message
     welcome_label = tk.Label(mealBoard, text="Weekly Meal Plan", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black")
@@ -378,7 +385,6 @@ def students(root):
 
         # Get the selected student's ID
         student_id = tree.item(selected_item, "values")[0]
-        room_number = tree.item(selected_item, "values")[10]
 
         # Confirm deletion
         confirm = messagebox.askyesno("Confirm Delete", "Are you sure you want to delete this student?")
@@ -389,7 +395,6 @@ def students(root):
         conn = sqlite3.connect("data.db")
         cursor = conn.cursor()
         cursor.execute("DELETE FROM student WHERE id = ?", (student_id,))
-        cursor.execute("UPDATE room SET occupied = occupied - 1 WHERE id = ?", (room_number,))
         conn.commit()
         conn.close()
 
@@ -412,12 +417,14 @@ def add_students(root):
     addStudent.geometry("800x600")
     addStudent.configure(bg="#f0f0f0")
     addStudent.iconbitmap("abc.ico")
-     # Add a small arrow button at the top-left corner
+
+    # Set the window to full screen
+    addStudent.attributes('-fullscreen', True)
+
+    # Add a small arrow button at the top-left corner
     back_button = tk.Label(addStudent, text="←", font=("Arial", 10), bg="#f0f0f0", fg="black", cursor="hand2")
     back_button.place(x=10, y=10)  # Position at the top-left corner
     back_button.bind("<Button-1>", lambda e: [addStudent.destroy(), admin_dashboard()])  # Bind click event
-
-
 
     # Fetch available rooms
     def fetch_rooms():
@@ -465,7 +472,6 @@ def add_students(root):
             messagebox.showinfo("Success", "Student added successfully!")
             admin_dashboard()
             addStudent.destroy()
-            
 
         except sqlite3.Error as e:
             messagebox.showerror("Database Error", f"Error: {e}")
