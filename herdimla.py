@@ -288,7 +288,7 @@ def students(user_id):
     def load_students():
         conn = sqlite3.connect("new.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM student WHERE user_id = ?", (user_id,))
+        cursor.execute("SELECT id, name, dob, address, email, number, parent_name, parent_number,entry_date,paid_till,room_number FROM student WHERE user_id = ?", (user_id,))
         students = cursor.fetchall()
         conn.close()
         for row in tree.get_children():
