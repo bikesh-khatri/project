@@ -458,7 +458,7 @@ def add_students(user_id):
                 INSERT INTO student (user_id, name, dob, address, email, number, parent_name, parent_number, entry_date, paid_till, room_number)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (user_id, name, dob, address, email, number, parent_name, parent_number, entry_date, paid_till, room_number))
-            cursor.execute("UPDATE room SET occupied = occupied + 1 WHERE id = ? AND user_id = ?", (room_number, user_id))
+            cursor.execute("UPDATE room SET occupied = occupied + 1 WHERE room_no = ? AND user_id = ?", (room_number, user_id))
             conn.commit()
             messagebox.showinfo("Success", "Student added successfully!")
             addStudent.destroy()
