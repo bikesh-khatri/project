@@ -401,7 +401,7 @@ def students(user_id):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM student WHERE id = ? AND user_id = ?", (student_id, user_id))
         if room_number:
-            cursor.execute("UPDATE room SET occupied = occupied - 1 WHERE id = ? AND user_id = ?", (room_number, user_id))
+            cursor.execute("UPDATE room SET occupied = occupied - 1 WHERE room_no = ? AND user_id = ?", (room_number, user_id))
         conn.commit()
         conn.close()
         tree.delete(selected_item)
