@@ -35,7 +35,7 @@ def register_page(root):
             messagebox.showerror("Error", "Number of rooms must be a positive integer!")
             return
 
-        conn = sqlite3.connect("data.db")
+        conn = sqlite3.connect("new.db")
         cursor = conn.cursor()
 
         try:
@@ -46,7 +46,7 @@ def register_page(root):
 
             # Insert rooms
             for i in range(number_of_rooms):
-                cursor.execute("INSERT INTO room (user_id, room_no, capacity) VALUES (?, ?, ?)", (user_id, i+1, 4))
+                cursor.execute("INSERT INTO room (user_id, room_no, capacity) VALUES (?, ?, ?)", user_id, i+1, 4)
 
             # Prepopulate default meal plan (e.g., for 7 days)
             default_meals = [
@@ -140,7 +140,7 @@ def login_page(root):
             messagebox.showerror("Invalid Input", "Fields must not be empty!")
             return
 
-        conn = sqlite3.connect("data.db")
+        conn = sqlite3.connect("new.db")
         cursor = conn.cursor()
         cursor.execute("SELECT id FROM users WHERE email = ? AND password = ?", (email, password))
         user = cursor.fetchone()
@@ -209,7 +209,7 @@ def meal_management(user_id):
     welcome_label = tk.Label(mealBoard, text="Weekly Meal Plan", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black")
     welcome_label.pack(pady=20)
 
-    conn = sqlite3.connect("data.db")
+    conn = sqlite3.connect("new.d")
     cursor = conn.cursor()
     cursor.execute("SELECT id, day, breakfast, meal, lunch, dinner FROM meal WHERE user_id = ?", (user_id,))
     meals = cursor.fetchall()
@@ -234,7 +234,7 @@ def meal_management(user_id):
             entry_widgets[meal_id].append(entry)
 
     def save_changes():
-        conn = sqlite3.connect("data.db")
+        conn = sqlite3.connect("new.db")
         cursor = conn.cursor()
         for meal_id, entries in entry_widgets.items():
             updated_values = [entry.get() for entry in entries]
@@ -284,7 +284,7 @@ def students(user_id):
     tree.column("Room Number", width=100)
 
     def load_students():
-        conn = sqlite3.connect("data.db")
+        conn = sqlite3.connect("new.db")
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM student WHERE user_id = ?", (user_id,))
         students = cursor.fetchall()
@@ -317,7 +317,7 @@ def students(user_id):
 
         def save_edit():
             updated_data = [entries[label].get() for label in labels]
-            conn = sqlite3.connect("data.db")
+            conn = sqlite3.connect("new.db")
             cursor = conn.cursor()
             cursor.execute("""
                 UPDATE student 
@@ -345,7 +345,7 @@ def students(user_id):
         if not confirm:
             return
 
-        conn = sqlite3.connect("data.db")
+        conn = sqlite3.connect("new.db")
         cursor = conn.cursor()
         cursor.execute("DELETE FROM student WHERE id = ? AND user_id = ?", (student_id, user_id))
         if room_number:
@@ -373,7 +373,7 @@ def add_students(user_id):
     back_button.bind("<Button-1>", lambda e: [addStudent.destroy(), admin_dashboard(user_id)])
 
     def fetch_rooms():
-        conn = sqlite3.connect("data.db")
+        conn = sqlite3.connect("new.db")
         cursor = conn.cursor()
         cursor.execute("SELECT id, room_no, capacity, occupied FROM room WHERE user_id = ? AND occupied < capacity", (user_id,))
         rooms_list = cursor.fetchall()
@@ -398,7 +398,7 @@ def add_students(user_id):
 
         room_number = int(selected_room.split()[1])
 
-        conn = sqlite3.connect("data.db")
+        conn = sqlite3.connect("new.db")
         cursor = conn.cursor()
         try:
             cursor.execute("""
