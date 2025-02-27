@@ -284,6 +284,17 @@ def students(root):
     welcome_label = tk.Label(students_win, text="Students Details", font=("Arial", 24, "bold"), bg="#F0F0F0", fg="black")
     welcome_label.pack(pady=20)
 
+    # Create a frame for the search bar
+    search_frame = tk.Frame(students_win, bg="#f0f0f0")
+    search_frame.pack(fill="x", padx=20, pady=10)
+
+    # Search bar components
+    tk.Label(search_frame, text="Search:", font=("Arial", 12), bg="#f0f0f0").pack(side="left", padx=5)
+    search_entry = tk.Entry(search_frame, font=("Arial", 12), width=30)
+    search_entry.pack(side="left", padx=5)
+    search_button = tk.Button(search_frame, text="Search", font=("Arial", 12), bg="#4CAF50", fg="white", command=lambda: search_students())
+    search_button.pack(side="left", padx=5)
+
     # Create a frame for the table
     table_frame = tk.Frame(students_win, bg="#f0f0f0")
     table_frame.pack(fill="both", expand=True, padx=20, pady=10)
@@ -310,7 +321,7 @@ def students(root):
     tree.column("Paid Till", width=100)
     tree.column("Room Number", width=100)
 
-    # Function to load student data into the table
+    # Function to load all student data into the table
     def load_students():
         conn = sqlite3.connect("data.db")
         cursor = conn.cursor()
@@ -322,9 +333,35 @@ def students(root):
         for row in tree.get_children():
             tree.delete(row)
 
-        # Insert new data into the table
+        # Insert all data into the table
         for student in students:
             tree.insert("", "end", values=student)
+
+    # Function to search and highlight student data
+    def search_students():
+        search_term = search_entry.get().strip().lower()
+        conn = sqlite3.connect("data.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM student")
+        students = cursor.fetchall()
+        conn.close()
+
+        # Clear existing data in the table
+        for row in tree.get_children():
+            tree.delete(row)
+
+        # Insert filtered and highlighted data
+        for student in students:
+            # Check if search term matches any field (case-insensitive)
+            if search_term and any(search_term in str(field).lower() for field in student):
+                # Highlight matching rows with a tag
+                tree.insert("", "end", values=student, tags=("highlight",))
+            elif not search_term:
+                # If search term is empty, show all students without highlighting
+                tree.insert("", "end", values=student)
+
+        # Configure the highlight tag
+        tree.tag_configure("highlight", background="yellow")
 
     # Function to edit a student record
     def edit_student():
@@ -347,7 +384,11 @@ def students(root):
         labels = ["ID", "Name", "DOB", "Address", "Email", "Phone", "Parent Name", "Parent Phone", "Entry Date", "Paid Till", "Room Number"]
         for i, label in enumerate(labels):
             tk.Label(edit_win, text=label, font=("Arial", 12), bg="#F0F0F0").grid(row=i, column=0, padx=10, pady=5, sticky="w")
-            entry = tk.Entry(edit_win, font=("Arial", 12))
+            if label == "ID":
+                # Make ID read-only
+                entry = tk.Entry(edit_win, font=("Arial", 12), state="readonly")
+            else:
+                entry = tk.Entry(edit_win, font=("Arial", 12))
             entry.grid(row=i, column=1, padx=10, pady=5, sticky="w")
             entry.insert(0, student_data[i])
             entries[label] = entry
@@ -366,7 +407,7 @@ def students(root):
             conn.close()
             messagebox.showinfo("Success", "Student record updated successfully!")
             edit_win.destroy()
-            load_students()
+            load_students()  # Reload all students after edit
 
         # Save button
         tk.Button(edit_win, text="Save", font=("Arial", 14), bg="#4CAF50", fg="white", command=save_edit).grid(row=len(labels), column=0, columnspan=2, pady=10)
@@ -397,7 +438,7 @@ def students(root):
         tree.delete(selected_item)
         messagebox.showinfo("Success", "Student removed successfully!")
 
-    # Load student data into the table
+    # Load initial student data into the table
     load_students()
 
     # Add buttons for editing and removing students
