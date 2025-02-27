@@ -46,7 +46,7 @@ def register_page(root):
 
             # Insert rooms
             for i in range(number_of_rooms):
-                cursor.execute("INSERT INTO room (user_id, room_no, capacity) VALUES (?, ?, ?)", user_id, i+1, 4)
+                cursor.execute("INSERT INTO room (user_id, room_no, capacity) VALUES (?, ?, ?)",( user_id, i+1, 4))
 
             # Prepopulate default meal plan (e.g., for 7 days)
             default_meals = [
